@@ -5,10 +5,10 @@
 - CRUD User </
 - CRUD Post </
 - Login & Signup </
-- Authentication & RestrictTo
-- Create First Admin
-- Upload Image Post
-- Handle with MVC
+- Authentication & RestrictTo </
+- Create First Admin </
+- Upload Image Post </
+- Handle with MVC </
 - Postman Collections (User, Post, Auth) </
 - Rate Limit (Bonus)
 
@@ -43,13 +43,5 @@
 ```
 
 ## must found
+
 # code && postman 3 files (User, Post, Auth) && link github && link server && env file
-
-
-
-talk to me about these topics in nodejs how do i add them to my project 
-
-- Authentication & RestrictTo
-- Create First Admin
-- Upload Image Post
-- Handle with MVC

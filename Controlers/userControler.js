@@ -1,61 +1,77 @@
 const AppError = require("../utils/AppError");
 const User = require("../Models/UserSchema");
 const Post = require("../Models/PostsSchema");
-const bcrypt = require("bcrypt");
-//
-const signUp = async (req, res) => {
-  const email = req.body.email;
-  const user = await User.findOne({ email });
-  if (user) {
-    throw new AppError("This User already exists", 400);
-  }
-  const body = req.body;
-  const hashedPassword = await bcrypt.hash(body.password, 12);
-  const newUser = await User.create({
-    name: body.name,
-    email: body.email,
-    bio: body.bio,
-    password: hashedPassword,
-    role: body.role,
-  });
 
-  res.status(201).json({ message: "New User Was Created!" });
-};
+//
+
 const getAllusers = async (req, res) => {
   const users = await User.find();
   res.status(200).json({ message: "Successful", users });
 };
 //
-const Login = async (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const user = await User.findOne({ email });
+const getUserById = async (req, res) => {
+  const id = req.params.id;
+  const user = await User.findOne({ _id: id });
   if (!user) {
-    throw new AppError("Make Sure Email And Password Are Correct", 404);
+    throw new AppError("Make Sure Id is Correct!", 404);
   }
-  const maches = await bcrypt.compare(password, user.password);
-  if (!maches) {
-    throw new AppError("Make Sure Email And Password Are Correct", 404);
+  const { token } = req.body;
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  if (!decoded) {
+    throw new AppError("Token Is Wrong!", 400);
   }
   res.status(200).json({ user });
 };
+
 //
 const UpdateUser = async (req, res) => {
-  const id = req.params.id;
-  const user = await User.findByIdAndUpdate(id, req.body, { new: true });
-  if (!user) {
-    throw new AppError("User Is Not Found.", 404);
+  try {
+    const id = req.params.id;
+
+    // 1. Check if user exists
+    const user = await User.findById(id);
+    if (!user) {
+      throw new AppError("User Not Found.", 404);
+    }
+
+    // 2. Authorization: only admin or owner can update
+    if (
+      req.user.role !== "admin" &&
+      req.user._id.toString() !== user._id.toString()
+    ) {
+      return res.status(403).json({ message: "You do not own this account" });
+    }
+
+    // 3. Perform update
+    const updatedUser = await User.findByIdAndUpdate(id, req.body, {
+      new: true, // return updated document
+      runValidators: true, // re-run schema validators
+    });
+
+    res.status(200).json({
+      message: "User updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    next(error);
   }
-  res.status(200).json({ user });
 };
+
 //
 const deleteUser = async (req, res) => {
   const id = req.params.id;
-  const user = await User.findByIdAndDelete(id);
+  const user = await User.findById(id);
   if (!user) {
     throw new AppError("User Is Not Found.", 404);
   }
+  if (
+    req.user.role !== "admin" &&
+    req.user._id.toString() !== user._id.toString()
+  ) {
+    throw new AppError("You do not own this account", 404);
+  }
   const { deletedCount } = await Post.deleteMany({ autherId: user._id });
+  await User.findByIdAndDelete(id);
   res
     .status(200)
     .json({ message: "User Deleted Successfuly", deletedPosts: deletedCount });
@@ -63,9 +79,8 @@ const deleteUser = async (req, res) => {
 //
 
 module.exports = {
-  signUp,
+  getUserById,
   getAllusers,
-  Login,
   UpdateUser,
   deleteUser,
 };

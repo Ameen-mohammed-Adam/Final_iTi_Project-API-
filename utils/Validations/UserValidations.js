@@ -14,6 +14,5 @@ const UpdateUserSchema = CreateUserSchema.fork(
 );
 
 module.exports = {
-  CreateUserSchema,
   UpdateUserSchema,
 };
