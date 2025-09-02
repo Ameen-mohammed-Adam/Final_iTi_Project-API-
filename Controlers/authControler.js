@@ -24,7 +24,7 @@ const signUp = async (req, res) => {
 const Login = async (req, res) => {
   const { email, password, token } = req.body;
   const user = await User.findOne({ email });
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const decoded = JWT.verify(token, process.env.JWT_SECRET);
   if (!user) {
     throw new AppError(
       "Make Sure Email And Password Are Correct or Token",
@@ -50,7 +50,7 @@ const protect = async (req, res, next) => {
       return res.status(401).json({ message: "Token missing!" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = JWT.verify(token, process.env.JWT_SECRET);
 
     const currentUser = await User.findById(decoded.id);
     if (!currentUser) {

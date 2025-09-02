@@ -32,9 +32,10 @@ mongoose
 
       console.log("First admin created.");
     }
+    app.listen(process.env.PORT, (error) => {
+      console.log(`Server Started On Port ${process.env.PORT}`);
+    });
   })
   .catch((err) => {
     console.error("MongoDB connection error:", err.message);
   });
-
-module.exports = app;
