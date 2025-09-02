@@ -1,0 +1,19 @@
+{
+  "name": "final_project_for_iti",
+  "version": "1.0.0",
+  "description": "This Is the Project i made for iTi (Backend_Track) in 2025/9/2 ",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "node": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "joi": "^18.0.1",
+    "mongoose": "^8.18.0"
+  }
+}
